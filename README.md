@@ -4,7 +4,17 @@ This repository contains the neural inverse design, optical simulation and SLC e
 
 The reference design uses a 10.4 µm Gaussian fiber mode-field diameter, a 50 µm diameter cylinder with polymer index 1.5263, and 50 radial bands each 0.5 µm wide. The frozen model accepts cylinder heights of 40–100 µm. The desktop tool selects heights at 0.5 µm intervals and produces 50 nm and 500 nm relief profiles, with a 500 nm layer SLC export of the connected cylinder and relief.
 
-## Run the frozen model or the desktop app
+## Portable Windows x64 app
+
+[**Download Fiber Metalens Designer for Windows x64 (ZIP, 154 MB)**](https://github.com/ph7klw76/metalensNN/releases/download/windows-x64-v1.0.0/Fiber-Metalens-Designer-Windows-x64.zip)
+
+1. Extract the entire ZIP to a writable folder.
+2. Open the extracted folder and double-click `Fiber Metalens Designer.exe`.
+3. Generate a design and use **Save 500 nm SLC** to export the fabrication geometry.
+
+The package includes the CPU runtime, trained model, and SLC tools. It runs offline after download without a separate Python, Anaconda, or WSL installation. See the [release notes and SHA-256 checksum](https://github.com/ph7klw76/metalensNN/releases/tag/windows-x64-v1.0.0).
+
+## Run from source with Python
 
 Use Python 3.12 and install the CPU dependencies in a virtual environment. Tk is required for the desktop window. The checkout includes the trained NN weights, optical configuration and frozen inference references under `artifacts/1550nm_height_family_n15263_v2/`. The locks in `locks/` describe the original CUDA and CPU Meep environments for research runs.
 
