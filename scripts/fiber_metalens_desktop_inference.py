@@ -1,25 +1,30 @@
 """Predict a height-specific metalens with the frozen NN and optical proxy.
 
-The desktop app invokes this in the bundled Windows JAX runtime or the project's
-WSL environment. Standard output is a single JSON object. The trusted checkpoint
-and original optical configuration are authenticated before inference.
+The desktop app invokes this in a native or WSL JAX environment. Standard output
+is a single JSON object. The selected parameter arrays, reference targets and
+original optical configuration are authenticated before inference.
 """
 
 from __future__ import annotations
 
 import argparse
 import hashlib
+from io import BytesIO
 import json
 import math
 import os
 from pathlib import Path
-import pickle
 import sys
 
 
 ROOT = Path(__file__).resolve().parents[1]
 CAMPAIGN = ROOT / 'artifacts/1550nm_height_family_n15263_v2'
-CHECKPOINT = CAMPAIGN / 'NN_seed47/checkpoint.pkl'
+WEIGHTS = CAMPAIGN / 'NN_seed47/weights.npz'
+REFERENCE = CAMPAIGN / 'inference_reference.json'
+WEIGHTS_SHA256 = '127404bf5795918eb9b81a12d8613620864cd024fcdb440908626576081ab2ca'
+REFERENCE_SHA256 = 'da1d65372d0fe6486d4af3778bc7ca5ddc2bbb684eb972ba11bc7c7faa143f66'
+ORIGINAL_CHECKPOINT = CAMPAIGN / 'NN_seed47/checkpoint.pkl'
+DENSE_KERNEL_SHAPES = ((1, 64), (64, 64), (64, 64), (64, 50))
 HEIGHT_RANGE_UM = (40.0, 100.0)
 V5_PROXY_HELPER_SHA = '9dbe44ff8716da100d6c0b9a661a29c61c31b931756081c3ac7ce41bd1ab9877'
 
@@ -32,28 +37,55 @@ def valid_height(height_um):
 
 
 def authenticate_model():
-    for name, digest in proxy_helpers.PINS.items():
-        if name.startswith(('artifacts/', 'scripts/')):
-            frozen_replay.require_hash(ROOT / name, digest)
-    contract = frozen_replay.load_frozen_contract(CAMPAIGN)
-    if contract['checkpoints']['NN'] != CHECKPOINT:
-        raise ValueError('Unexpected selected NN checkpoint path.')
-    checkpoint_path = CHECKPOINT.relative_to(ROOT).as_posix()
-    checkpoint_bytes = CHECKPOINT.read_bytes()
-    checkpoint_sha = hashlib.sha256(checkpoint_bytes).hexdigest()
-    if checkpoint_sha != proxy_helpers.PINS[checkpoint_path]:
-        raise ValueError('Frozen NN checkpoint failed its checksum.')
-    # Deserialize only the trusted byte sequence matched to the original SHA.
-    checkpoint = pickle.loads(checkpoint_bytes)
-    selected = contract['selection']['selection']['NN']
-    if (checkpoint['signature'] != contract['signature']
-            or checkpoint['step'] != contract['config']['natural_training']['steps']
-            or checkpoint['calls'] != selected['objective_calls']
-            or checkpoint['best'] is None
-            or checkpoint['best_key'] != selected['validation_key']
-            or min(row['key'] for row in checkpoint['validations']) != checkpoint['best_key']):
-        raise ValueError('Selected validation checkpoint does not match the frozen training record.')
-    return contract, checkpoint['best'], checkpoint_sha
+    import numpy as np
+
+    config_path = CAMPAIGN / 'config.json'
+    manifest_path = CAMPAIGN / 'train_source_manifest.json'
+    config_sha = frozen_replay.require_hash(config_path, proxy_helpers.PINS[config_path.relative_to(ROOT).as_posix()])
+    frozen_replay.require_hash(manifest_path, proxy_helpers.PINS[manifest_path.relative_to(ROOT).as_posix()])
+    frozen_replay.require_hash(REFERENCE, REFERENCE_SHA256)
+    config = frozen_replay.read(config_path)
+    manifest = frozen_replay.read(manifest_path)
+    reference = frozen_replay.read(REFERENCE)
+    if manifest['config_sha256'] != config_sha or set(manifest['sources']) != set(frozen_replay.DEPENDENCIES):
+        raise ValueError('Frozen configuration or training source set differs from the study.')
+    signature = hashlib.sha256(config_path.read_bytes())
+    for name in frozen_replay.DEPENDENCIES:
+        source = ROOT / name
+        frozen_replay.require_hash(source, manifest['sources'][name])
+        signature.update(source.read_bytes())
+    checkpoint_sha = proxy_helpers.PINS[ORIGINAL_CHECKPOINT.relative_to(ROOT).as_posix()]
+    training = config['natural_training']
+    expected_heights = {str(float(height)) for split in ('train', 'validation', 'heldout')
+                        for height in training[f'{split}_H_um']}
+    if (signature.hexdigest() != manifest['signature']
+            or reference['training_signature'] != manifest['signature']
+            or reference['schema_version'] != 1
+            or reference['original_checkpoint_sha256'] != checkpoint_sha
+            or reference['checkpoint']['seed'] != 47
+            or reference['checkpoint']['steps'] != training['steps']
+            or set(reference['heights']) != expected_heights):
+        raise ValueError('Frozen references do not match the selected training checkpoint.')
+
+    encoded = WEIGHTS.read_bytes()
+    if hashlib.sha256(encoded).hexdigest() != WEIGHTS_SHA256:
+        raise ValueError('Frozen NN weights failed their checksum.')
+    params = {}
+    expected_arrays = {f'Dense_{i}.{name}' for i in range(len(DENSE_KERNEL_SHAPES))
+                       for name in ('kernel', 'bias')}
+    with np.load(BytesIO(encoded), allow_pickle=False) as archive:
+        if set(archive.files) != expected_arrays or len(archive.files) != len(expected_arrays):
+            raise ValueError('Frozen NN weights contain an unexpected parameter set.')
+        for index, kernel_shape in enumerate(DENSE_KERNEL_SHAPES):
+            layer = f'Dense_{index}'
+            params[layer] = {}
+            for name, shape in (('kernel', kernel_shape), ('bias', (kernel_shape[1],))):
+                array = archive[f'{layer}.{name}']
+                if array.dtype != np.dtype('<f4') or array.shape != shape or not np.isfinite(array).all():
+                    raise ValueError(f'Invalid frozen NN parameter: {layer}.{name}.')
+                params[layer][name] = array
+    contract = dict(config=config, all_targets=reference['heights'], signature=manifest['signature'])
+    return contract, {'params': params}, checkpoint_sha
 
 
 def infer(height_um, backend='cpu'):
@@ -120,14 +152,9 @@ def infer(height_um, backend='cpu'):
     radial_width = diameter / (2 * annuli)
     target_diameter = float(metadata['declared_target_diameter_um'])
     target_z = float(metadata['target_output_z_um'])
-    if frozen is not None:
-        original_record, = (row for row in contract['result']['records']
-                            if row['method'] == 'NN' and row['H_um'] == height_um)
-        original_design = frozen_replay.read(CAMPAIGN / f'designs/H{height_um:g}/NN.json')
-        match = frozen_replay.profile_comparison(
-            fine, original_design['heights_um'], original_record['profile_sha256'])
-        if not (match['exact_float32_profile_match'] and match['profile_byte_hash_match']):
-            raise ValueError('The 50 nm decoder profile differs from the frozen height-family result.')
+    fine_sha = hashlib.sha256(fine.astype('<f4').tobytes()).hexdigest()
+    if frozen is not None and fine_sha != frozen['profile_sha256']:
+        raise ValueError('The 50 nm decoder profile differs from the frozen height-family result.')
 
     score = jax.jit(loss.terms)
     results = []
@@ -162,6 +189,7 @@ def infer(height_um, backend='cpu'):
         polymer_index=config['materials']['polymer']['n'], target_diameter_um=target_diameter,
         output_reference_z_um=target_z, backend=device.platform,
         provenance=dict(checkpoint_sha256=checkpoint_sha, checkpoint_parameter_source='NN_seed47/checkpoint.best',
+                        weights_sha256=WEIGHTS_SHA256, reference_sha256=REFERENCE_SHA256,
                         source_signature=contract['signature'], height_domain=domain,
                         efficiency_method='One-way finite-cylinder optical proxy with vector Gaussian overlap',
                         profile_500nm_method='Round nominal 50 nm profile to nearest 500 nm, ties upward'),
@@ -181,8 +209,8 @@ def main():
         parser.exit(1, f'Prediction failed: {error}\n')
 
 
-# These helpers own the original checksum map, replay and quantization details.
-# Check the source before import and before any pickle is read.
+# These helpers own the original checksum map, decoder source and quantization.
+# Verify the source before importing either frozen helper.
 helper_path = ROOT / 'scripts/evaluate_frozen_NN_500nm_proxy_v1.py'
 if hashlib.sha256(helper_path.read_bytes()).hexdigest() != V5_PROXY_HELPER_SHA:
     raise ValueError('Frozen proxy helper source changed.')

@@ -1,0 +1,16 @@
+{
+  "config_sha256": "ace2ec9cd90d72d31d469bf6c1372291b7b0ac80612bdc3a76b8335854d9a734",
+  "signature": "f9555b84fd53765e5909755a973b82e5bddaad64624eeb46044376e55a8e215e",
+  "sources": {
+    "scripts/run_height_family_n15263_v2.py": "0d2411ecf9d5b25b34f62fbc6abb98d274a589cda84a4f7c734c924ac5f79e4c",
+    "src/fiber_metalens_nn/height_conditioned_loss_v2.py": "e3f7b8d552d725056569a5c01c87baa0f0925aa232923e33adcda1c1b8154645",
+    "src/fiber_metalens_nn/collimation_proxy.py": "27a9c53111196830315c9857b1e5b5ba272219be33cd7de71eee0010cc6d7c7e",
+    "src/fiber_metalens_nn/collimation_optics.py": "5381f4c88a5452862907284bf5fb405849ea39d3739bed7c8b29b8cc0abf0692",
+    "src/fiber_metalens_nn/collimation_loss_v2.py": "41a01715729a219e1848dc25d0fae631c6c54d87dccef43be42c3dc1aea42146",
+    "src/fiber_metalens_nn/natural_collimation.py": "bce90d7204f3eb4ac427b56834be403a57873fe1c404fb26ee2f65fd2fa547e6",
+    "src/fiber_metalens_nn/natural_nn_loss_v1.py": "84fe132faf2eee0c385f8151f434dd64445d06a57ed9714425aa37a7011a074f"
+  },
+  "GPU_devices": [
+    "cuda:0"
+  ]
+}

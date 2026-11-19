@@ -6,7 +6,7 @@ The reference design uses a 10.4 µm Gaussian fiber mode-field diameter, a 50 µ
 
 ## Run the frozen model or the desktop app
 
-Use Python 3.12 and install the CPU dependencies in a virtual environment. Tk is required for the desktop window. The locks in `locks/` describe the original CUDA and CPU Meep environments. Frozen inference requires the study's checkpoint and reference files in `artifacts/1550nm_height_family_n15263_v2/`. Obtain these separately before running the inference or desktop commands.
+Use Python 3.12 and install the CPU dependencies in a virtual environment. Tk is required for the desktop window. The checkout includes the trained NN weights, optical configuration and frozen inference references under `artifacts/1550nm_height_family_n15263_v2/`. The locks in `locks/` describe the original CUDA and CPU Meep environments for research runs.
 
 ```text
 python -m pip install -r requirements-cpu.txt
@@ -24,4 +24,4 @@ Run these commands from the repository root. In the window, enter `67.5`, select
 - `scripts/fiber_metalens_desktop_slc.py`, `scripts/audit_metalens_slc.py` and `vendor/` contain the export route, independent contour audit and the extracted SLC writer with provenance.
 - `configs/`, `locks/` and `tests/` contain physical configurations, dependency locks and regression checks. Tests for historical fabrication binaries or saved field arrays require their original fixtures. See [research workflow](docs/research-workflow.md) for the original phase entry points and [project assumptions](assumptions.md) for modeling scope.
 
-The frozen inference entry point verifies source, configuration and checkpoint hashes before loading the selected parameters. Load checkpoints only from a trusted source.
+The inference entry point verifies the hashes of the source, configuration, selected parameters and reference data, then reads the parameters as NumPy arrays. The reference data preserve the original optical seeds and target definitions for the 18 previously evaluated heights. Other heights use a seed and target computed by the same forward model.
