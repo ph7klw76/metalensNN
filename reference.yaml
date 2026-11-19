@@ -1,0 +1,60 @@
+audit_date: 2026-10-23
+project_classification: same-specification restricted annular design; not exact reproduction
+execution_track: SYNTHETIC_DEMONSTRATION
+sources:
+  hadibrata:
+    title: Inverse Design and 3D Printing of a Metalens on an Optical Fiber Tip for Direct Laser Lithography
+    doi: 10.1021/acs.nanolett.0c04463
+    supplied_file: ../nanoletter.pdf
+    sha256: d045140f1cdf9182566e1a16a37d2e7108a65368b78d52a7ae03cd24f2d7c64f
+    extraction: scanned PDF; OCR checked against page images 2-5
+    supporting_information: artifacts/source_audit/nl0c04463_si_001.pdf
+    supporting_information_sha256: f62d39cf0407077913af18c9592bee9e2c175788a2315d4b5c93e18602b44f03
+    supporting_information_url: https://ndownloader.figshare.com/files/26827426
+    publisher_metadata_url: https://api.figshare.com/v2/articles/14219470
+  ou:
+    doi: 10.1016/j.photonics.2025.101396
+    supplied_file: ../1-s2.0-S156944102500046X-main.pdf
+    sha256: 527c0f8d10f54d945dabb4541b49cad6bc41a1776c3f93bd66252d91588a5bda
+    role: architecture inspiration only; its pupil model is not substituted for polymer physics
+benchmark_A:
+  source_pages: [2, 3, 5]
+  wavelength_um: 0.98
+  diameter_um: 24.8
+  lens_height_um: 2.5
+  simulated_focus_um: 7.7
+  measured_focus_um: 7.8
+  reported_NA: 0.85
+  measured_full_width_at_exp_minus_2_intensity_um: 1.1
+  simulated_efficiency: {value: 0.76, collection: integrated intensity at FWHM, denominator: not fully specified numerically}
+  experimental_efficiency: {value: 0.73, collection: power through measured beam diameter, denominator: not fully specified numerically}
+  our_eta: Poynting power within fixed radius 0.55 um at target plane / incident power through aperture
+  direct_comparability: false
+benchmark_B:
+  source_pages: [3, 4, 5]
+  wavelength_um: 0.78
+  fiber_core_diameter_um_approx: 9
+  buffer_layer: present; thickness not given
+  smallest_reported_linewidth_um: 0.220
+  reported_power_mW_for_line: 6
+  laser_repetition_MHz: 80
+  pulse_duration_fs_at_laser_schematic_approx: 100
+  pulse_duration_at_fiber_tip_fs: null
+  transfer_A_efficiency_or_focus: prohibited
+  modeled_in_phases_2_to_7: false
+material_data:
+  actual_IP_Dip_cured_n_kappa: unavailable in supplied paper and SI
+  actual_substrate: fused silica slide per SI page 2; numerical index not supplied
+  actual_ambient_characterization: air inferred after development; exact surroundings unresolved
+  actual_uncured_resin_n_kappa: unavailable
+  execution_values: configs/desktop_trial.json
+  assumed_polymer_n_kappa: [1.52, 0.0]
+  assumed_substrate_n_kappa: [1.45, 0.0]
+  assumed_ambient_n_kappa: [1.0, 0.0]
+  time_convention: exp(-i omega t); passive kappa >= 0; epsilon=(n+i*kappa)^2
+unresolved: [exact CAD, local cross sections, resin cure/dose and n/kappa, substrate dispersion, buffer thickness, physical aperture stop]
+scaling_factor_1_7: paper-specific 2D-to-3D adjustment; not used in this trial
+software_sources:
+  meep_cylindrical: https://meep.readthedocs.io/en/latest/Python_Tutorials/Cylindrical_Coordinates/
+  meep_installation: https://meep.readthedocs.io/en/latest/Installation/
+  jax: https://docs.jax.dev/en/latest/installation.html

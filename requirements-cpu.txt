@@ -1,0 +1,10 @@
+numpy==2.2.6
+scipy==1.15.3
+ml-dtypes==0.6.0
+jax==0.6.2
+jaxlib==0.6.2
+flax==0.10.6
+optax==0.2.5
+chex==0.1.90
+orbax-checkpoint==0.12.8
+tensorstore==0.1.85

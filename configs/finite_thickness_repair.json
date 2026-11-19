@@ -1,0 +1,138 @@
+{
+  "schema_version": 1,
+  "result_label": "SYNTHETIC_DEMONSTRATION",
+  "wavelength_um": 0.98,
+  "aperture_diameter_um": 24.8,
+  "annuli": 32,
+  "height_max_um": 2.5,
+  "flat_height_um": 1.25,
+  "collection_radius_um": 0.55,
+  "exit_plane_z_um": 2.5,
+  "substrate_surface_z_um": 0.0,
+  "materials": {
+    "polymer": {
+      "n": 1.52,
+      "kappa": 0.0,
+      "provenance": "assumed generic dielectric; NOT measured IP-Dip"
+    },
+    "substrate": {
+      "n": 1.45,
+      "kappa": 0.0,
+      "provenance": "assumed generic silica-like dielectric"
+    },
+    "ambient": {
+      "n": 1.0,
+      "kappa": 0.0,
+      "provenance": "assumed air-like dielectric"
+    }
+  },
+  "illumination": {
+    "polarization": "x_linear",
+    "profile": "normally incident plane wave through explicit PEC aperture at substrate surface",
+    "aperture_stop_thickness_um": 0.1
+  },
+  "fabrication": {
+    "min_width_um": 0.3,
+    "min_gap_um": 0.3,
+    "height_step_um": 0.05,
+    "max_aspect_ratio": 8.0,
+    "provenance": "assumed trial limits; not calibrated printer capability"
+  },
+  "proxy": {
+    "grid_n": 256,
+    "window_um": 32.0,
+    "padding": 2,
+    "subpixels": 8,
+    "max_propagating_na_fraction": 0.98,
+    "axial_offset_um": 1.2,
+    "focus_scan_min_um": 4.0,
+    "focus_scan_max_um": 12.0,
+    "focus_scan_step_um": 0.25,
+    "sampling_eta_relative_tolerance": 0.05,
+    "sampling_focus_relative_tolerance": 0.02,
+    "model": "split_step",
+    "thickness_slices": 25,
+    "split_step_reference_index": 1.26
+  },
+  "loss": {
+    "center_eta": -1.0,
+    "axial_eta": 0.15,
+    "sidelobe_power": 0.03,
+    "height_grid": 0.002,
+    "sidelobe_inner_radius_um": 1.1,
+    "sidelobe_outer_radius_um": 3.3
+  },
+  "training": {
+    "train_targets_um": [
+      7.0,
+      7.4,
+      8.1,
+      8.5,
+      9.0
+    ],
+    "validation_targets_um": [
+      7.2,
+      8.3,
+      8.8
+    ],
+    "heldout_targets_um": [
+      7.6,
+      7.8,
+      8.0,
+      8.6
+    ],
+    "final_evaluation_target_um": 7.8,
+    "seeds": [
+      11,
+      29,
+      47
+    ],
+    "steps": 120,
+    "validation_interval": 10,
+    "patience": 5,
+    "min_improvement": 0.0001,
+    "learning_rate": 0.003,
+    "correction_logit_scale": 0.5,
+    "batch_size": 1,
+    "direct_learning_rate": 0.015,
+    "phase4_direct_steps": 64,
+    "fresnel_seed_offset_um": 1.25
+  },
+  "maxwell": {
+    "coarse_resolution_per_um": 20,
+    "refinement_resolutions_per_um": [
+      30,
+      40
+    ],
+    "pml_um": 1.5,
+    "radial_padding_um": 3.0,
+    "top_z_um": 14.0,
+    "bottom_z_um": -3.5,
+    "source_z_um": -1.0,
+    "reflection_z_um": -0.5,
+    "transmission_z_um": 12.5,
+    "after_sources_time": 60.0,
+    "source_fwidth_fraction": 0.3,
+    "focus_tolerance_relative": 0.02,
+    "eta_tolerance_relative": 0.05,
+    "balance_tolerance": 0.05,
+    "max_initial_unique_geometries": 12,
+    "m": 1,
+    "profile_prism": true
+  },
+  "acceptance": {
+    "focal_error_relative_max": 0.1,
+    "eta_relative_to_fresnel_min": 0.9,
+    "measured_material_validation": false
+  },
+  "repair_provenance": {
+    "seed_rule": "phase seed at the geometric mid-height, offset hmax/2; this changes heights, never measurement coordinates",
+    "regression_targets_already_inspected_um": [
+      7.6,
+      7.8,
+      8.6
+    ],
+    "new_prospective_target_um": 8.0,
+    "full_wave_backpropagation": false
+  }
+}

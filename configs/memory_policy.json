@@ -1,0 +1,6 @@
+{
+  "host_free_floor_bytes": null,
+  "host_memory_policy": "telemetry_only",
+  "applies_to_phases": [1, 2, 3, 4, 5, 6, 7],
+  "reason": "User removed the fixed Windows free-RAM blocking threshold, including the former 0.56 GiB block, across desktop Phases 1-7 on 2026-10-23. Project RSS, WSL available RAM, GPU budgets, and job timeouts remain monitored."
+}

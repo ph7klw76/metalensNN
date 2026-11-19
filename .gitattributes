@@ -1,0 +1,5 @@
+# The frozen checkpoint and solver manifests hash original file bytes.
+* -text
+*.pkl binary
+*.npz binary
+*.slc binary

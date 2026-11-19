@@ -1,0 +1,292 @@
+{
+  "schema_version": 1,
+  "result_label": "SYNTHETIC_MATCHED_N1P50_CONDITIONAL_NN_NATURAL_COLLIMATION_V1",
+  "wavelength_um": 1.55,
+  "mfd_um": 9.0,
+  "fiber_nominal_NA": 0.14,
+  "fiber_NA_interpretation": "nominal acceptance NA, not a Gaussian angular cutoff",
+  "materials": {
+    "substrate": {
+      "n": 1.5,
+      "kappa": 0.0
+    },
+    "polymer": {
+      "n": 1.5,
+      "kappa": 0.0
+    },
+    "ambient": {
+      "n": 1.0,
+      "kappa": 0.0
+    }
+  },
+  "material_provenance": "SYNTHETIC ASSUMPTION: Gaussian fibre-surrogate medium and polymer bothn1.50, air1, allkappa0. No verified real core/resin index or cladding/eigenmode supplied.",
+  "architecture": "solid_cylinder_with_top_annular_relief",
+  "cylinder_diameter_um": 48.0,
+  "annuli": 24,
+  "height_max_um": 3.0,
+  "fabrication": {
+    "height_step_um": 0.05,
+    "min_width_um": 0.5,
+    "max_relief_aspect_ratio": 8.0,
+    "limits_are_assumed": true
+  },
+  "proxy": {
+    "grid_n": 192,
+    "window_um": 64.0,
+    "padding": 2,
+    "pedestal_dz_um": 0.5,
+    "relief_slices": 24,
+    "output_clearance_um": 1.0
+  },
+  "loss": {
+    "version": "natural_conditional_nn_v1",
+    "negative_useful_power": 1.0,
+    "width": 0.05,
+    "phase": 0.05,
+    "angular": 0.02,
+    "sidelobe": 0.1,
+    "roughness": 0.0002,
+    "transmission_floor": 0.9,
+    "low_power_penalty": 10.0
+  },
+  "training": {
+    "train_pairs": [
+      [
+        30,
+        27
+      ],
+      [
+        30,
+        33
+      ],
+      [
+        32,
+        30
+      ],
+      [
+        34,
+        28
+      ],
+      [
+        36,
+        32
+      ],
+      [
+        38,
+        30
+      ],
+      [
+        40,
+        27
+      ],
+      [
+        40,
+        33
+      ]
+    ],
+    "validation_pairs": [
+      [
+        31,
+        29
+      ],
+      [
+        37,
+        31
+      ],
+      [
+        39,
+        28
+      ]
+    ],
+    "heldout_pairs": [
+      [
+        35,
+        30
+      ],
+      [
+        33,
+        32
+      ],
+      [
+        37,
+        28
+      ]
+    ],
+    "seeds": [
+      11,
+      29,
+      47
+    ],
+    "steps": 100,
+    "validation_interval": 10,
+    "patience": 5,
+    "learning_rate": 0.004,
+    "direct_learning_rate": 0.025,
+    "correction_um": 1.2
+  },
+  "maxwell": {
+    "resolutions_per_um": [
+      6,
+      9,
+      12
+    ],
+    "extra_resolution_per_um": 16,
+    "pml_um": 2.0,
+    "padding_um": 10.0,
+    "after_sources_time": 160.0,
+    "source_z_um": -2.0,
+    "reflection_z_um": -1.0,
+    "bottom_um": -6.0,
+    "crosscheck_distance_um": 5.0,
+    "balance_tolerance": 0.05,
+    "metric_relative_tolerance": 0.02,
+    "eta_relative_tolerance": 0.05,
+    "divergence_absolute_tolerance_rad": 0.001,
+    "max_unique_candidates": 10,
+    "max_feedback_rounds": 1,
+    "child_timeout_s": 1800
+  },
+  "robustness_assumed_variations": {
+    "height_um": [
+      -1,
+      1
+    ],
+    "mfd_um": [
+      8.5,
+      9.5
+    ],
+    "wavelength_um": [
+      1.5,
+      1.6
+    ],
+    "polymer_n": [
+      1.5,
+      1.54
+    ],
+    "relief_scale": [
+      0.95,
+      1.05
+    ],
+    "cylinder_diameter_um": [
+      46,
+      50
+    ]
+  },
+  "resource_policy": {
+    "phase": 8,
+    "host_ram_gate": null,
+    "project_rss_gate": null,
+    "wsl_ram_gate": null,
+    "gpu_vram_gate": "retain",
+    "workers": 1
+  },
+  "scope": "Same solid cylinder/top relief. Primary objective is actual-size wavefront flattening and reduced excess divergence. 30um and old5percent gate remain separately reported aspirations; no NN/generalization claim.",
+  "historical_30um_evaluation": {
+    "processing_planes_um": [
+      0,
+      25,
+      50,
+      75,
+      100
+    ],
+    "diagnostic_planes_um": [
+      500,
+      1000
+    ],
+    "target_diameter_um": 30.0,
+    "diameter_bounds_um": [
+      27,
+      33
+    ],
+    "max_diameter_change": 0.05,
+    "minimum_overlap": 0.9,
+    "minimum_eta_mode": 0.7,
+    "minimum_baseline_ratio": 0.9
+  },
+  "evaluation": {
+    "processing_planes_um": [
+      0,
+      25,
+      50,
+      75,
+      100
+    ],
+    "diagnostic_planes_um": [
+      200
+    ]
+  },
+  "natural_training": {
+    "train_H_um": [
+      30,
+      32,
+      34,
+      36,
+      38,
+      40
+    ],
+    "validation_H_um": [
+      31,
+      33,
+      37,
+      39
+    ],
+    "heldout_H_um": [
+      35
+    ],
+    "seeds": [
+      11,
+      29,
+      47
+    ],
+    "steps": 100,
+    "pilot_steps": 10,
+    "validation_interval": 10,
+    "learning_rate": 0.004,
+    "direct_learning_rate": 0.025,
+    "conditional_input": "H only; target diameter is a frozen field-derived function of H, not an independently varied condition",
+    "direct_baseline": "Optimize a non-neural6x24 training-height correction table, interpolate corrections at validation/heldout heights. Never optimize on H35.",
+    "model": "existing ConditionalMLP:3 hidden tanh layers of64,24 bounded output heights, zero output initialization",
+    "target_definition": "Flat-phase vector Gaussian at output with scalar1/e2 diameter from power-second-moment fit of actual proxy cylinder-top field, frozen before optimization; target propagates diffractively at all5 planes.",
+    "geometry": "fixed cylinder48um,24 rings, heights0..3um, quantization.05um; field-derived relief initialization perH",
+    "selection": "On quantized validation geometries only: minimize sum of normalized feasibility violations; among feasible candidates maximize worst-case declared useful efficiency, then minimize mean loss. No heldout feedback.",
+    "investigation_gates": {
+      "transmission_min": 0.9,
+      "declared_Gaussian_overlap_min": 0.98,
+      "useful_efficiency_min": 0.9,
+      "output_diameter_relative_tolerance": 0.1,
+      "max_sidelobe_fraction": 0.02,
+      "max_abs_normalized_curvature": 0.1,
+      "max_angular_second_moment_ratio": 1.1
+    },
+    "gate_provenance": "New provisional study criteria declared before training; not user-measured application tolerances or an assertion of physical acceptance.",
+    "optimizer_calls_per_seed_per_method": {
+      "updates": 100,
+      "validation": 40,
+      "trained_recovery": 2,
+      "total": 142
+    },
+    "diagnostic_preflight_calls": "Separate logged diagnostic budget, at most20 objective calls; excluded identically from performance comparison.",
+    "Maxwell_feedback_rounds": 0
+  },
+  "campaign_limits": {
+    "pilot_timeout_s": 600,
+    "training_timeout_s": 1200,
+    "Maxwell_total_timeout_s": 3600,
+    "Maxwell_child_timeout_s": 600,
+    "Maxwell_max_total_solves": 24,
+    "gpu_workers": 1,
+    "CPU_simulation_workers": 1,
+    "VRAM_cap_GiB": 6,
+    "RAM_gates": false,
+    "Maxwell_mesh": [
+      6,
+      12,
+      16
+    ],
+    "Maxwell_boundary_checks": [
+      "pml3",
+      "padding15",
+      "duration240"
+    ]
+  }
+}

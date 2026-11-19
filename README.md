@@ -6,7 +6,7 @@ The reference design uses a 10.4 µm Gaussian fiber mode-field diameter, a 50 µ
 
 ## Run the frozen model or the desktop app
 
-Use Python 3.12 and install the CPU dependencies in a virtual environment. Tk is required for the desktop window. The training and simulation locks in `locks/` describe the separate original CUDA and CPU Meep environments.
+Use Python 3.12 and install the CPU dependencies in a virtual environment. Tk is required for the desktop window. The locks in `locks/` describe the original CUDA and CPU Meep environments. Frozen inference requires the study's checkpoint and reference files in `artifacts/1550nm_height_family_n15263_v2/`. Obtain these separately before running the inference or desktop commands.
 
 ```text
 python -m pip install -r requirements-cpu.txt
@@ -14,14 +14,14 @@ python scripts/fiber_metalens_desktop_inference.py --height-um 67.5 --backend cp
 python scripts/fiber_metalens_desktop.py
 ```
 
-Run these commands from the repository root. In the window, select **Generate design** and then **Save 500 nm SLC**. Export writes a geometry audit and a source manifest alongside the SLC. A compact audited example is available under `exports/Example_H67p5/`. The input indices are modeled assumptions, and the displayed efficiencies are forward-model predictions.
+Run these commands from the repository root. In the window, enter `67.5`, select **Generate design**, and then select **Save 500 nm SLC**. Export writes a geometry audit and a source manifest alongside the SLC. The input indices are modeled assumptions, and the displayed efficiencies are forward-model predictions.
 
 ## Source and reproducibility
 
 - `src/fiber_metalens_nn/` contains the optical models, neural training support, geometry and metrics.
-- [`scripts/run_height_family_n15263_v2.py`](scripts/run_height_family_n15263_v2.py) contains the original height-conditioned model, decoder and training loop. It uses JAX 0.6.2, Flax 0.10.6 and Optax 0.2.5. The frozen checkpoint and model-selection inputs are in `artifacts/1550nm_height_family_n15263_v2/`.
-- `scripts/height_family_maxwell_worker_v2.py` and `scripts/height_family_maxwell_analysis_v2.py` implement the Meep 1.35.0 cylindrical simulations and analysis. The tracked checkout includes selected model and geometry data. Some archived validation and report drivers also require the original raw fields or campaign ledgers.
+- [`scripts/run_height_family_n15263_v2.py`](scripts/run_height_family_n15263_v2.py) contains the original height-conditioned model, decoder and training loop. It uses JAX 0.6.2, Flax 0.10.6 and Optax 0.2.5.
+- `scripts/height_family_maxwell_worker_v2.py` and `scripts/height_family_maxwell_analysis_v2.py` implement the Meep 1.35.0 cylindrical simulations and analysis. Some archived validation and report drivers require the original raw fields or campaign ledgers.
 - `scripts/fiber_metalens_desktop_slc.py`, `scripts/audit_metalens_slc.py` and `vendor/` contain the export route, independent contour audit and the extracted SLC writer with provenance.
-- `configs/`, `locks/` and `tests/` contain physical configurations, dependency locks and regression checks. See [research workflow](docs/research-workflow.md) for the original phase entry points and [project assumptions](assumptions.md) for modeling scope.
+- `configs/`, `locks/` and `tests/` contain physical configurations, dependency locks and regression checks. Tests for historical fabrication binaries or saved field arrays require their original fixtures. See [research workflow](docs/research-workflow.md) for the original phase entry points and [project assumptions](assumptions.md) for modeling scope.
 
-The frozen inference entry point verifies source, configuration and checkpoint hashes before loading the selected parameters. Use only the checkpoint supplied with this repository or another source you trust.
+The frozen inference entry point verifies source, configuration and checkpoint hashes before loading the selected parameters. Load checkpoints only from a trusted source.

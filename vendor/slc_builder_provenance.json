@@ -1,0 +1,43 @@
+{
+  "source": "fiber_builder_gui_v10_fast.py",
+  "original_source_sha256": "d03f067d62b3592dd47cfae670a99ce7fbe4a9d48f66d1ddabe924c1532f1800",
+  "subset": "slc_builder_subset.py",
+  "subset_sha256": "b23d330788ee21bc1c24d49142362313ed8884d356ba7725cfd20128e22d1220",
+  "literal_constants": [
+    "EXPORT_ORIGIN_MODE",
+    "UM_TO_MM",
+    "SLC_XY_MM_PER_UM",
+    "SLC_Z_MM_PER_UM",
+    "SLC_LAYER_THICKNESS_UM",
+    "SLC_Z_ORIGIN",
+    "SLC_XY_ORIGIN",
+    "SLC_FIRST_LAYER_FRACTION",
+    "SLC_MAX_LAYERS",
+    "SLC_MAX_TRIANGLES",
+    "SLC_MAX_FILENAME_LENGTH"
+  ],
+  "functions": [
+    "dump_json",
+    "sha256",
+    "positive",
+    "vecnorm",
+    "slc_options",
+    "slc_normalize_options",
+    "slc_companion_names",
+    "short_slc_path",
+    "slc_output_path",
+    "slc_transform_mesh",
+    "slc_load_stl_mm",
+    "slc_mesh_from_arrays",
+    "slc_mesh_sha256",
+    "slc_signed_area",
+    "slc_point_inside",
+    "slc_check_planar_loops",
+    "slc_orient_and_quantize",
+    "slc_slice_at_z",
+    "slc_readback",
+    "slc_layer_schedule",
+    "_convert_stl_to_slc_only"
+  ],
+  "verification": "Every selected source segment and its Python AST match the audited original."
+}
